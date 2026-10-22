@@ -1,0 +1,20 @@
+{
+  "name": "lark-agent-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Run Codex or Claude Code from a private Lark bot chat, with attachments and persistent memory.",
+  "license": "AGPL-3.0-or-later",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "setup": "node setup.mjs",
+    "start": "node bridge.mjs",
+    "background": "node background.mjs",
+    "doctor": "node doctor.mjs",
+    "stop": "node stop.mjs",
+    "lark": "node lark.mjs",
+    "test": "node --test *.test.mjs",
+    "check:public": "node tools/check-public.mjs"
+  },
+  "dependencies": {"@larksuite/cli": "1.0.98", "mupdf": "1.28.1"}
+}

@@ -1,0 +1,25 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,copyFileSync,writeFileSync,readFileSync,mkdirSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {run} from './runner.mjs';
+test('/stop bypasses an active task, clears queue, and leaves the bridge usable',async()=>{
+  const directory=mkdtempSync(join(tmpdir(),'lark-stop-integration-'));
+  for(const name of ['bridge.mjs','runner.mjs','attachments.mjs','outputs.mjs','memory.mjs','models.mjs','skills.mjs','facts.mjs','agents.mjs','config.mjs','output-schema.json','memory-schema.json'])copyFileSync(fileURLToPath(new URL('./'+name,import.meta.url)),join(directory,name));
+  mkdirSync(join(directory,'templates','lark-workflow-memory'),{recursive:true});
+  copyFileSync(fileURLToPath(new URL('./templates/lark-workflow-memory/SKILL.md',import.meta.url)),join(directory,'templates','lark-workflow-memory','SKILL.md'));
+  const replies=join(directory,'replies.ndjson');
+  const lark=join(directory,'lark.mjs');
+  writeFileSync(lark,`import {appendFileSync} from 'node:fs';const args=process.argv.slice(2);if(args[0]==='event'){console.error('[event] ready event_key=im.message.receive_v1');const emit=(id,content)=>console.log(JSON.stringify({type:'im.message.receive_v1',sender_type:'user',sender_id:'owner',chat_type:'p2p',chat_id:'chat',message_type:'text',message_id:id,content,create_time:String(Date.now())}));setTimeout(()=>emit('om_task','long task'),100);setTimeout(()=>emit('om_queued','queued task'),400);setTimeout(()=>emit('om_stop','/stop'),1000);setTimeout(()=>emit('om_next','next task'),2500);setInterval(()=>{},1000);process.stdin.resume();process.stdin.on('end',()=>process.exit());}else if(args.includes('+chat-messages-list')){console.log(JSON.stringify({ok:true,data:{messages:[]}}));}else{let text='';for await(const chunk of process.stdin)text+=chunk;appendFileSync(${JSON.stringify(replies)},JSON.stringify({id:args[args.indexOf('--message-id')+1],text})+'\\n');console.log('{"ok":true}');}`);
+  const codex=join(directory,'codex.mjs');
+  writeFileSync(codex,`let text='';for await(const chunk of process.stdin)text+=chunk;if(text.includes('Task:\\nlong task')){console.log(JSON.stringify({type:'thread.started',thread_id:'session'}));setInterval(()=>{},1000);}else{console.log(JSON.stringify({type:'thread.started',thread_id:'session'}));console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:JSON.stringify({reply:text.includes('Task:\\nqueued task')?'QUEUED_RAN':'NEXT_OK',attachments:[]})}}));console.log(JSON.stringify({type:'turn.completed'}));}`);
+  writeFileSync(join(directory,'config.json'),JSON.stringify({allowedUserId:'owner',workspace:directory,larkScript:lark,codexScript:codex,taskTimeoutMs:20000}));
+  const result=await run(join(directory,'bridge.mjs'),[],{cwd:directory,timeout:7000});
+  const rows=readFileSync(replies,'utf8').trim().split('\n').map(JSON.parse);
+  assert.ok(rows.some(r=>r.id==='om_stop'&&r.text.includes('Task stopped')));
+  assert.ok(rows.some(r=>r.id==='om_next'&&r.text==='NEXT_OK'));
+  assert.ok(!rows.some(r=>r.id==='om_queued'),'queued task must not execute');
+  assert.ok(!rows.some(r=>r.text.includes('QUEUED_RAN')));
+});

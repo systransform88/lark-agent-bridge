@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "reply": {"type": "string"},
+    "attachments": {"type": "array", "items": {"type": "string"}},
+    "memory_updates": {"type":"array","items":{"type":"object","properties":{"action":{"type":"string","enum":["upsert","delete"]},"key":{"type":"string"},"value":{"type":"string"}},"required":["action","key","value"],"additionalProperties":false}}
+  },
+  "required": ["reply", "attachments", "memory_updates"],
+  "additionalProperties": false
+}

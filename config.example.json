@@ -1,0 +1,11 @@
+{
+  "agent": "codex",
+  "access": "read-only",
+  "allowedUserId": "REPLACE_WITH_YOUR_LARK_OPEN_ID",
+  "userName": "User",
+  "botAppId": "",
+  "botOpenId": "",
+  "workspace": "./workspace",
+  "stateDirectory": "./.bridge-data",
+  "taskTimeoutMs": 600000
+}

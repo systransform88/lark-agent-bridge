@@ -1,0 +1,1 @@
+{"type":"object","properties":{"updates":{"type":"array","items":{"type":"object","properties":{"action":{"type":"string","enum":["upsert","delete"]},"key":{"type":"string"},"value":{"type":"string"}},"required":["action","key","value"],"additionalProperties":false}},"question":{"type":"string"}},"required":["updates","question"],"additionalProperties":false}
