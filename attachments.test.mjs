@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { attachmentKind, confinedFile, downloadAttachments, taskAttachments } from './attachments.mjs';
@@ -15,7 +15,7 @@ test('accept signatures rather than untrusted filenames', () => {
 });
 test('reject files outside download folder', () => {
   const outside = join(workspace,'outside.png'); writeFileSync(outside,'test');
-  assert.equal(confinedFile(workspace,image),image);
+  assert.equal(confinedFile(workspace,image),realpathSync(image));
   assert.throws(() => confinedFile(workspace,outside), /outside/);
 });
 test('download errors and sender mismatches do not enter context', async () => {

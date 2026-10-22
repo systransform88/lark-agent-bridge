@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync, closeSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, openSync, closeSync, unlinkSync, realpathSync } from 'node:fs';
 import { dirname, join, delimiter } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline';
@@ -212,4 +212,4 @@ async function main() {
   setInterval(() => { if (!stopping && existsSync(stopFile)) { unlinkSync(stopFile); stop(); } }, 1000);
   log(`Starting bridge; agent=${cfg.agent}; access=${cfg.access}; workspace=${cfg.workspace}`); listen();
 }
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main().catch(e => { console.error(e); process.exitCode = 1; });
+if (process.argv[1] && realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1])) main().catch(e => { console.error(e); process.exitCode = 1; });
