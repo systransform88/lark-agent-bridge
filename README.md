@@ -6,6 +6,10 @@ Send instructions, upload PDFs or images, and receive answers and generated file
 
 This is an independent project. It uses the official Lark CLI and the selected coding agent's CLI; it is not an official Lark, OpenAI, or Anthropic product.
 
+## Desktop preview
+
+The experimental Electron app provides connection setup, agent sign-in, start/stop and cancellation controls, and a local memory/skills viewer. See the [desktop alpha guide](docs/DESKTOP.md) for test builds and setup. Coding agent installation and a Lark custom app are still required.
+
 ## Requirements
 
 - Node.js 22 or newer and Git.

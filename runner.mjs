@@ -10,10 +10,10 @@ export function terminateTree(child) {
     killer.on('error',()=>child.kill());
    }else {try{process.kill(-child.pid,'SIGTERM');}catch{child.kill('SIGTERM');}setTimeout(()=>{try{process.kill(-child.pid,'SIGKILL');}catch{}},1000).unref();}
 }
-export function run(script,args,{cwd,input,timeout=60000,signal}={}) {
+export function run(script,args,{cwd,input,timeout=60000,signal,env}={}) {
   signal?.throwIfAborted();
   return new Promise((resolve,reject)=>{
-    const child=spawnCommand(script,args,{cwd,detached:process.platform!=='win32',stdio:['pipe','pipe','pipe']});
+    const child=spawnCommand(script,args,{cwd,env,detached:process.platform!=='win32',stdio:['pipe','pipe','pipe']});
     let stdout='',stderr='',expired=false,aborted=false;
     child.stdout.on('data',d=>{stdout=(stdout+d).slice(-2000000);});
     child.stderr.on('data',d=>{stderr=(stderr+d).slice(-12000);});

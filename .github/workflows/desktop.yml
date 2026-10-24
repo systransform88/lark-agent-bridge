@@ -1,0 +1,44 @@
+name: Desktop alpha
+on:
+  workflow_dispatch:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run check:public
+      - if: runner.os != 'Linux'
+        run: npm run test:desktop
+      - if: runner.os == 'Linux'
+        run: xvfb-run -a npm run test:desktop
+      - run: npm run desktop:build
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - if: runner.os != 'Linux'
+        run: node tools/desktop-smoke.mjs
+      - if: runner.os == 'Linux'
+        run: xvfb-run -a node tools/desktop-smoke.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/desktop/*.exe
+            dist/desktop/*.dmg
+            dist/desktop/*.zip
+            dist/desktop/*.AppImage
+            dist/desktop/*.deb
+          if-no-files-found: error
+          retention-days: 14

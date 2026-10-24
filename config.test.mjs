@@ -16,3 +16,12 @@ test('relative directories resolve beside the config and access defaults to read
   const cfg=loadConfig(dir,{createDirectories:false});
   assert.equal(cfg.workspace,join(dir,'work'));assert.equal(cfg.access,'read-only');assert.equal(cfg.stateDirectory,join(dir,'.bridge-data'));
 });
+
+test('named Lark profiles apply to every backend CLI call and reject malformed names',()=>{
+  const dir=mkdtempSync(join(tmpdir(),'bridge-profile-'));
+  const settings={allowedUserId:'owner',larkScript:'fake.mjs',codexScript:'fake.mjs',larkProfile:'desktop-test'};
+  writeFileSync(join(dir,'config.json'),JSON.stringify(settings));
+  assert.deepEqual(loadConfig(dir,{createDirectories:false}).larkScript,{command:process.execPath,args:['fake.mjs','--profile','desktop-test']});
+  writeFileSync(join(dir,'config.json'),JSON.stringify({...settings,larkProfile:'bad profile'}));
+  assert.throws(()=>loadConfig(dir,{createDirectories:false}),/Invalid Lark profile/);
+});

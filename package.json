@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Run Codex or Claude Code from a private Lark bot chat, with attachments and persistent memory.",
   "license": "AGPL-3.0-or-later",
-  "engines": {"node": ">=22"},
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "setup": "node setup.mjs",
     "start": "node bridge.mjs",
@@ -14,7 +16,20 @@
     "stop": "node stop.mjs",
     "lark": "node lark.mjs",
     "test": "node --test *.test.mjs",
-    "check:public": "node tools/check-public.mjs"
+    "check:public": "node tools/check-public.mjs",
+    "desktop": "node tools/desktop-launch.mjs",
+    "desktop:runtime": "node tools/desktop-runtime.mjs",
+    "desktop:pack": "npm run desktop:runtime && electron-builder --config electron-builder.config.cjs --dir",
+    "desktop:build": "npm run desktop:runtime && electron-builder --config electron-builder.config.cjs",
+    "test:desktop": "playwright test --config desktop/playwright.config.mjs"
   },
-  "dependencies": {"@larksuite/cli": "1.0.98", "mupdf": "1.28.1"}
+  "dependencies": {
+    "@larksuite/cli": "1.0.98",
+    "mupdf": "1.28.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  }
 }

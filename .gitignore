@@ -21,4 +21,9 @@ chat-settings.json
 smoke-results.json
 migrated-skills/
 output/
+.desktop-runtime/
+dist/
+test-results/
+playwright-report/
+desktop-artifacts/
 lark-im-resources/
