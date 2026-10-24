@@ -43,7 +43,7 @@ class DesktopController extends EventEmitter{
   state(){return structuredClone(this.snapshot);}
   publish(){this.snapshot.settings=this.publicSettings();this.emit('state',this.state());}
   log(message,level='info'){const item={time:new Date().toISOString(),level,message:redact(message).slice(0,1500)};this.snapshot.activity.push(item);this.snapshot.activity=this.snapshot.activity.slice(-150);this.publish();}
-  assertStopped(){if(this.worker)throw new Error('Stop the bridge before changing its connection or settings.');}
+  assertStopped(){if(this.worker||this.starting)throw new Error('Stop the bridge before changing its connection or settings.');}
   persist(){
     const config={...this.settings,stateDirectory:path.join(this.dir,'state'),skillDirectory:path.join(this.dir,'skills'),taskTimeoutMs:600000};
     delete config.agentExecutable;
@@ -116,6 +116,7 @@ class DesktopController extends EventEmitter{
   }
   async startBridge(){
     if(this.starting)return this.starting;
+    if(this.authAbort||this.pendingLark)throw new Error('Finish or cancel sign-in before starting the bridge.');
     this.cancelStart=false;
     this.starting=this.startWorker().catch(error=>{if(!this.worker){this.snapshot.bridge={status:'stopped',taskBusy:false};this.publish();}throw error;}).finally(()=>{this.starting=null;});
     return this.starting;

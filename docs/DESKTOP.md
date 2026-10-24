@@ -6,6 +6,8 @@ An Electron desktop app for testing the local Lark bridge on Windows, macOS and 
 
 Download a build for your operating system from the **Desktop alpha** GitHub Actions workflow artifacts. Unzip the artifact, then run the Windows installer, macOS DMG, or Linux AppImage/deb. These alpha builds are unsigned; operating systems may show an unidentified-publisher notice. Only run builds you obtained from this repository.
 
+Managed Windows computers may block unsigned builds through Device Guard. A blocked build needs your administrator's approval or a signed release. This app does not change that policy. Developers can use the source-development workflow below when permitted by their organization.
+
 You still need an installed Codex CLI or Claude Code, your own agent account, and a Lark custom app. The installer includes the bridge runtime and official Lark CLI. It does not install the coding agent for you. Keep your computer awake and online while listening.
 
 1. Open **Connections**, choose Codex or Claude Code, select a workspace folder and **Save settings**.
