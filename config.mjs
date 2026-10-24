@@ -13,7 +13,13 @@ export function findProgram(name) {
 }
 export function resolveCommand(name,override) {
   if(override){if(typeof override!=='object'||typeof override.command!=='string'||(override.args&&!Array.isArray(override.args)))throw new Error('Command override must be {command, args}.');return {command:findProgram(override.command),args:override.args||[]};}
-  if(name==='lark-cli')return {command:process.execPath,args:[join(dirname(require.resolve('@larksuite/cli/package.json')),'scripts','run.js')]};
+  if(name==='lark-cli'){
+    const cliRoot=dirname(require.resolve('@larksuite/cli/package.json'));
+    const native=join(cliRoot,'bin','lark-cli'+(process.platform==='win32'?'.exe':''));
+    // Prefer the installed native CLI so agents can invoke it without a Node shell shim.
+    if(existsSync(native))return {command:native,args:[]};
+    return {command:process.execPath,args:[join(cliRoot,'scripts','run.js')]};
+  }
   const executable=findProgram(name);
   if(/\.cmd$/i.test(executable)){
     const packageName=name==='codex'?'@openai/codex/bin/codex.js':'@anthropic-ai/claude-code/cli.js';

@@ -4,6 +4,7 @@ const path=require('node:path');
 const os=require('node:os');
 const {pathToFileURL}=require('node:url');
 const {DesktopController,trustedURL}=require('./controller.cjs');
+if(process.env.LARK_DESKTOP_DATA_DIR){const directory=path.resolve(process.env.LARK_DESKTOP_DATA_DIR);fs.mkdirSync(directory,{recursive:true,mode:0o700});app.setPath('userData',directory);}
 protocol.registerSchemesAsPrivileged([{scheme:'bridge',privileges:{standard:true,secure:true,supportFetchAPI:true}}]);
 let window,controller,tray,quitting=false;
 const UI_URL='bridge://app/index.html';

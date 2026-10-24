@@ -2,8 +2,6 @@ name: Desktop alpha
 on:
   workflow_dispatch:
   pull_request:
-  push:
-    branches: [feat/desktop-alpha]
 permissions:
   contents: read
 jobs:
