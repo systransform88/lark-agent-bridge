@@ -1,0 +1,10 @@
+{
+  "name": "lark-agent-bridge-desktop",
+  "productName": "Lark Agent Bridge",
+  "version": "0.2.0-alpha.1",
+  "description": "A local desktop companion for Lark, Codex, and Claude Code.",
+  "main": "main.cjs",
+  "type": "commonjs",
+  "author": "Lark Agent Bridge contributors",
+  "license": "AGPL-3.0-or-later"
+}

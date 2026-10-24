@@ -36,6 +36,11 @@ export function loadConfig(base,{createDirectories=true}={}) {
   const skillDirectory=resolve(dirname(path),raw.skillDirectory||join(stateDirectory,'skills'));
   const cfg={...raw,agent,access,workspace,stateDirectory,skillDirectory,taskTimeoutMs:raw.taskTimeoutMs||600000,userName:raw.userName||'User'};
   cfg.larkScript=raw.larkScript||resolveCommand('lark-cli',raw.commands?.lark);
+  if(raw.larkProfile){
+    if(!/^[a-zA-Z0-9_-]{1,64}$/.test(raw.larkProfile))throw new Error('Invalid Lark profile name.');
+    const command=typeof cfg.larkScript==='string'?{command:process.execPath,args:[cfg.larkScript]}:cfg.larkScript;
+    cfg.larkScript={...command,args:[...(command.args||[]),'--profile',raw.larkProfile]};
+  }
   cfg.codexScript=raw.codexScript||(agent==='codex'?resolveCommand('codex',raw.commands?.codex):undefined);
   cfg.claudeCommand=raw.claudeCommand||(agent==='claude'?resolveCommand('claude',raw.commands?.claude):undefined);
   if(createDirectories){
